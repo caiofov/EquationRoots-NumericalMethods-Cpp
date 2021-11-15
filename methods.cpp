@@ -2,27 +2,26 @@
 #include <cmath>
 using namespace std;
 #include "methods.h"
-#include "functions.h"
 
-float posicaoFalsa(float a, float b, float erro, int count){
+float posicaoFalsa(float a, float b, float precisao, float(*funcao)(float), int count){
   count++;
   float fa = funcao(a); //f(a)
   float fb = funcao(b); //f(b)
   
-  cout << "\n" <<count << "ª Iteração \n";
+  printf("\n %dª Iteração \n", count);
 
-  if( (abs(b-a) > erro) && (fa*fb < 0)){
+  if( (abs(b-a) > precisao) && (fa*fb < 0)){
     float pm = ((a*fb)-(b*fa))/(fb - fa); //ponto medio
     float fp = funcao(pm); //f(ponto medio)
-
+    
     cout << "\n a = " << a << " | f(a) =" << fa << " | b = " << b << " | f(b) = " << fb << " \n p = " << pm << " | f(p) = " << fp << endl;
     
-    if((fp*fa < 0) && (abs(pm - a) > erro) && (abs(fp) > erro)){
-      return posicaoFalsa(a, pm, erro, count);
+    if((fp*fa < 0) && (abs(pm - a) > precisao) && (abs(fp) > precisao)){
+      return posicaoFalsa(a, pm, precisao, funcao, count);
     }
     
-    else if((fp * fb < 0) && (abs(b-pm) > erro) && (abs(fp) > erro)){
-      return posicaoFalsa(pm, b, erro, count);
+    else if((fp * fb < 0) && (abs(b-pm) > precisao) && (abs(fp) > precisao)){
+      return posicaoFalsa(pm, b, precisao, funcao, count);
     }
     
     else{
@@ -31,63 +30,61 @@ float posicaoFalsa(float a, float b, float erro, int count){
   }
  
   else{
-    cout << "Erro \n";
+    printf("precisao \n");
     return -999999;
   }
 }
 
-float bissecao(float a, float b, float erro, int count){
+float bissecao(float a, float b, float precisao, float(*funcao)(float), int count){
   count++;
   float fa = funcao(a); //f(a)
   float fb = funcao(b); //f(b)
-  cout << "\n" <<count << "ª Iteração \n";
+  printf("\n %dª Iteração \n", count);
 
   if(fa == 0){ //checa se é raiz
-    cout << "a é raiz" << endl;
+    printf("a é raiz\n");
     return a;
   }
   if(fb == 0){ //checa se é raiz
-    cout << "b é raiz" << endl;
+    printf("b é raiz\n");
     return b;
   }
   
-  if( (abs(b-a) > erro) && (fa*fb < 0)){
+  if( (abs(b-a) > precisao) && (fa*fb < 0)){
     float pm = (a+b)/2; //ponto medio
     float fp = funcao(pm); //f(ponto medio)
 
     cout << "\n a = " << a << " | f(a) =" << fa << " | b = " << b << " | f(b) = " << fb << " \n p = " << pm << " | f(p) = " << fp << endl;
     
     if((fp*fa < 0) 
-    && (abs(pm - a) > erro) 
-    && (abs(fp) > erro)){
-      return bissecao(a, pm, erro, count);
+    && (abs(pm - a) > precisao) 
+    && (abs(fp) > precisao)){
+      return bissecao(a, pm, precisao, funcao, count);
     }
     
     else if((fp * fb < 0) 
-    && (abs(b-pm) > erro) 
-    && (abs(fp) > erro)){
-      return bissecao(pm, b, erro, count);
+    && (abs(b-pm) > precisao) 
+    && (abs(fp) > precisao)){
+      return bissecao(pm, b, precisao, funcao, count);
     }
     
     else{
       if(fp == 0){ //checa se é raiz
-        cout << "Ponto médio é raiz" << endl;
+        printf("Ponto médio é raiz");
       }
       return pm;
     }
   }
  
   else{
-    cout << "Erro \n";
+    printf("Erro \n");
     return -999999;
   }
 }
 
-
-
-float newtonRaphson(float x0, float erro, int count){
+float newtonRaphson(float x0, float precisao, float (*funcao)(float), float (*funcaoDerivada)(float), int count){
   count++;
-  cout << "\n" <<count << "ª Iteração \n";
+  printf("\n%dª Iteração \n", count);
   float fx0 = funcao(x0);
   float phiX = x0 - (fx0/funcaoDerivada(x0));
 
@@ -97,8 +94,8 @@ float newtonRaphson(float x0, float erro, int count){
     cout << "x0 é raiz" << endl;
     return x0;}; //checa se é raiz
   
-  if(abs(fx0) > erro){
-    return newtonRaphson(phiX, erro,count);
+  if(abs(fx0) > precisao){
+    return newtonRaphson(phiX, precisao, funcao, funcaoDerivada, count);
   }
   else{
     return x0;
@@ -106,7 +103,7 @@ float newtonRaphson(float x0, float erro, int count){
 
 }
 
-float secante(float x0, float x1, float erro, int count){
+float secante(float x0, float x1, float precisao, float (*funcao)(float), float (*funcaoDerivada)(float), int count){
   count++;
   cout << "\n" <<count << "ª Iteração \n";
   
@@ -125,8 +122,8 @@ float secante(float x0, float x1, float erro, int count){
     return x1;
   } 
 
-  if(abs(fx0) > erro){
-    return secante(x1,phiX2,erro,count);
+  if(abs(fx0) > precisao){
+    return secante(x1,phiX2,precisao, funcao, funcaoDerivada, count);
   }
 
   else{
