@@ -133,4 +133,94 @@ float secante(float x0, float x1, float precisao, float (*funcao)(float), float 
 
 }
 
+float pontoFixo(float x0, float (*funcao)(float), float (*funcaoIteracao)(float), float precisao, int count){
+  count++;
+  printf("\n %dª Iteração \n", count);
+
+  float phix0 = funcaoIteracao(x0);
+  float fx0 =  funcao(x0);
+  cout << "x0 = " << x0 << " | F(x0) = " << fx0 << "\nPhi(x0) = " << phix0 << endl;
+  if(fx0 == 0){ //checa se x0 é raiz
+    cout << "x0 é raiz" << endl;
+    return x0;
+  }
+
+  if( abs(fx0) > precisao){
+    
+    return pontoFixo(phix0, funcao, funcaoIteracao, precisao, count);
+  }
+
+  if(isinf(x0) || isnan(x0)){
+    cout << "Tente outra função de iteração" << endl;
+  }
+  
+  return x0;
+  
+}
+
+float calculoPolinomio(int numCoef, float coeficientes[numCoef], float x){
+  int grau = numCoef - 1;
+  float z = x;
+
+  float b = coeficientes[grau];
+  
+  for(int i = grau-1; i > -1; i--){
+    b = coeficientes[i] + b*z;
+  }
+
+  return b;
+}
+
+float calculoDerivada(int numCoef, float coeficientes[numCoef], float x){
+  
+  int grau = numCoef - 1;
+  float z = x;
+
+  float b = coeficientes[grau];
+  float c = b;
+  
+  for(int i = grau-1; i > 0; i--){
+    b = coeficientes[i] + b*z;
+    c = b + c*z;
+  }
+  //b = coeficientes[0] + b*z;
+
+  return c;
+  
+}
+
+float polinomioNewton(int numCoef, float coeficientes[numCoef], float x, float precisao, int maxIter){
+  int grau = numCoef - 1;
+  float b,c;
+
+  for(int k = 0; k < maxIter + 1; k++){
+    
+    //inicializa as variaveis B e C
+    b = coeficientes[grau];
+    c = b;
+    
+    for(int i = grau-1; i > 0; i--){
+      b = coeficientes[i] + b*x;
+      c = b + c*x;
+    }
+    b = coeficientes[0] + b*x;
+
+    //mostrando os valores
+    printf("\n%dª Iteração: \nb: %f | c: %f \nx: %f\n", k+1,b,c, x);
+
+    //b = f(x) -> vendo se x já é um bom valor
+    if(abs(b) <= precisao){
+      return x;
+    }
+
+    //atualizando o valor de X pela função de iteração do método de newton
+    x = x - b/c;
+  }
+
+  cout << "Número máximo de iterações" << endl;
+  return -99999;
+
+
+}
+
 

@@ -22,5 +22,8 @@ float funcaoIteracao4(float x){
 }
 
 int main() {
-  printf("Raiz: %f", pontoFixo(2, funcao2, funcaoIteracao4, 0.00001));
+  printf("Raiz: %f", newtonRaphson(1,0.0001,&funcao2,&funcaoDerivada2));
+  printf("Hello world\n");
+
+  return 1;
 }
