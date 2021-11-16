@@ -3,25 +3,21 @@
 using namespace std;
 #include "methods.h"
 
-float posicaoFalsa(float a, float b, float precisao, float(*funcao)(float), int count){
+float falsePosition(float a, float b, float precisao, float(*function)(float), int count){
   count++;
-  float fa = funcao(a); //f(a)
-  float fb = funcao(b); //f(b)
+  float fa = function(a); //f(a)
+  float fb = function(b); //f(b)
   
-  printf("\n %dª Iteração \n", count);
-
   if( (abs(b-a) > precisao) && (fa*fb < 0)){
     float pm = ((a*fb)-(b*fa))/(fb - fa); //ponto medio
-    float fp = funcao(pm); //f(ponto medio)
-    
-    cout << "\n a = " << a << " | f(a) =" << fa << " | b = " << b << " | f(b) = " << fb << " \n p = " << pm << " | f(p) = " << fp << endl;
-    
+    float fp = function(pm); //f(ponto medio)
+        
     if((fp*fa < 0) && (abs(pm - a) > precisao) && (abs(fp) > precisao)){
-      return posicaoFalsa(a, pm, precisao, funcao, count);
+      return falsePosition(a, pm, precisao, function, count);
     }
     
     else if((fp * fb < 0) && (abs(b-pm) > precisao) && (abs(fp) > precisao)){
-      return posicaoFalsa(pm, b, precisao, funcao, count);
+      return falsePosition(pm, b, precisao, function, count);
     }
     
     else{
@@ -30,72 +26,62 @@ float posicaoFalsa(float a, float b, float precisao, float(*funcao)(float), int 
   }
  
   else{
-    printf("precisao \n");
     return -999999;
   }
 }
 
-float bissecao(float a, float b, float precisao, float(*funcao)(float), int count){
+float bissection(float a, float b, float precisao, float(*function)(float), int count){
   count++;
-  float fa = funcao(a); //f(a)
-  float fb = funcao(b); //f(b)
-  printf("\n %dª Iteração \n", count);
+  float fa = function(a); //f(a)
+  float fb = function(b); //f(b)
 
-  if(fa == 0){ //checa se é raiz
-    printf("a é raiz\n");
+  if(fa == 0){ //checks if it's an exact root
     return a;
   }
-  if(fb == 0){ //checa se é raiz
-    printf("b é raiz\n");
+  if(fb == 0){ //checks if it's an exact root
     return b;
   }
   
   if( (abs(b-a) > precisao) && (fa*fb < 0)){
     float pm = (a+b)/2; //ponto medio
-    float fp = funcao(pm); //f(ponto medio)
+    float fp = function(pm); //f(ponto medio)
 
-    cout << "\n a = " << a << " | f(a) =" << fa << " | b = " << b << " | f(b) = " << fb << " \n p = " << pm << " | f(p) = " << fp << endl;
-    
     if((fp*fa < 0) 
     && (abs(pm - a) > precisao) 
     && (abs(fp) > precisao)){
-      return bissecao(a, pm, precisao, funcao, count);
+      return bissection(a, pm, precisao, function, count);
     }
     
     else if((fp * fb < 0) 
     && (abs(b-pm) > precisao) 
     && (abs(fp) > precisao)){
-      return bissecao(pm, b, precisao, funcao, count);
+      return bissection(pm, b, precisao, function, count);
     }
     
     else{
-      if(fp == 0){ //checa se é raiz
-        printf("Ponto médio é raiz");
+      if(fp == 0){ //checks if it's an exact root
       }
       return pm;
     }
   }
  
   else{
-    printf("Erro \n");
+    printf("Error \n");
     return -999999;
   }
 }
 
-float newtonRaphson(float x0, float precisao, float (*funcao)(float), float (*funcaoDerivada)(float), int count){
+float newtonRaphson(float x0, float precisao, float (*function)(float), float (*functionderivative)(float), int count){
   count++;
   printf("\n%dª Iteração \n", count);
-  float fx0 = funcao(x0);
-  float phiX = x0 - (fx0/funcaoDerivada(x0));
-
-  cout << "x0 = "<<x0<<" | F(x0) = "<<fx0<<" | Phi(x0) = " <<phiX << endl;
+  float fx0 = function(x0);
+  float phiX = x0 - (fx0/ functionDerivative(x0));
   
-  if(fx0 == 0){
-    cout << "x0 é raiz" << endl;
-    return x0;}; //checa se é raiz
+  if(fx0 == 0){ //checks if it's an exact root
+    return x0;}; 
   
   if(abs(fx0) > precisao){
-    return newtonRaphson(phiX, precisao, funcao, funcaoDerivada, count);
+    return newtonRaphson(phiX, precisao, function, functionDerivative, count);
   }
   else{
     return x0;
@@ -103,27 +89,23 @@ float newtonRaphson(float x0, float precisao, float (*funcao)(float), float (*fu
 
 }
 
-float secante(float x0, float x1, float precisao, float (*funcao)(float), float (*funcaoDerivada)(float), int count){
+float secant(float x0, float x1, float precisao, float (*function)(float), float (*functionderivative)(float), int count){
   count++;
-  cout << "\n" <<count << "ª Iteração \n";
   
-  float fx0 = funcao(x0);
-  float fx1 = funcao(x1);
+  float fx0 = function(x0);
+  float fx1 = function(x1);
   
   float phiX2 = ((x0*fx1) - x1*fx0)/(fx1 - fx0);
-  cout << "X(k-1) = " << x0 << " | Xk = " << x1 <<"\nF(xk-1) = "<< fx0 << " | F(xk) = " << fx1 << "\nPhi(x2) = " << phiX2 << endl;
 
   if(fx0 == 0){ //checa se é raiz
-    cout << "x0 é raiz" << endl;
     return x0;
     }; 
   if(fx1 == 0){ //checa se é raiz
-    cout << "x1 é raiz" << endl;
     return x1;
   } 
 
   if(abs(fx0) > precisao){
-    return secante(x1,phiX2,precisao, funcao, funcaoDerivada, count);
+    return secant(x1,phiX2,precisao, function, functionDerivative, count);
   }
 
   else{
@@ -133,13 +115,12 @@ float secante(float x0, float x1, float precisao, float (*funcao)(float), float 
 
 }
 
-float pontoFixo(float x0, float (*funcao)(float), float (*funcaoIteracao)(float), float precisao, int count){
+float pontoFixo(float x0, float (*function)(float), float (*functionIteration)(float), float precisao, int count){
   count++;
-  printf("\n %dª Iteração \n", count);
 
-  float phix0 = funcaoIteracao(x0);
-  float fx0 =  funcao(x0);
-  cout << "x0 = " << x0 << " | F(x0) = " << fx0 << "\nPhi(x0) = " << phix0 << endl;
+  float phix0 = functionIteration(x0);
+  float fx0 =  function(x0);
+
   if(fx0 == 0){ //checa se x0 é raiz
     cout << "x0 é raiz" << endl;
     return x0;
@@ -147,11 +128,11 @@ float pontoFixo(float x0, float (*funcao)(float), float (*funcaoIteracao)(float)
 
   if( abs(fx0) > precisao){
     
-    return pontoFixo(phix0, funcao, funcaoIteracao, precisao, count);
+    return pontoFixo(phix0, function, functionIteration, precisao, count);
   }
 
   if(isinf(x0) || isnan(x0)){
-    cout << "Tente outra função de iteração" << endl;
+    cout << "Tip: try another iteration function" << endl;
   }
   
   return x0;
@@ -171,7 +152,7 @@ float calculoPolinomio(int numCoef, float coeficientes[numCoef], float x){
   return b;
 }
 
-float calculoDerivada(int numCoef, float coeficientes[numCoef], float x){
+float calculateDerivative(int numCoef, float coeficientes[numCoef], float x){
   
   int grau = numCoef - 1;
   float z = x;
@@ -183,7 +164,6 @@ float calculoDerivada(int numCoef, float coeficientes[numCoef], float x){
     b = coeficientes[i] + b*z;
     c = b + c*z;
   }
-  //b = coeficientes[0] + b*z;
 
   return c;
   
